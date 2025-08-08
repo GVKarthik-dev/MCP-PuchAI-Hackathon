@@ -10,22 +10,14 @@ from docx import Document
 from fastmcp import FastMCP
 from langchain_groq import ChatGroq
 
-# Load environment variables from .env file
-load_dotenv('.env.dev')
+load_dotenv('.env')
 
-# Initialize FastMCP server
 mcp = FastMCP(name="Groq AI Knowledge, Document Q&A & Health Assistant")
 
-# Get Groq API key from environment, raise error if not found
-groq_api_key = os.getenv("GROQ_API_KEY")
-if not groq_api_key:
-    raise ValueError("Please set GROQ_API_KEY in your environment variables.")
 
-# Initialize ChatGroq client with your Groq API key
 chat_groq = ChatGroq(
     model='llama-3.1-8b-instant',
     max_tokens=200,
-    api_key=groq_api_key  # Pass the API key here if required by ChatGroq
 )
 
 
@@ -92,7 +84,6 @@ async def upload_and_qa(
         else:
             return "Unsupported or unknown document format. Please specify 'file_type'."
 
-    # Extract text from document
     text = ""
     try:
         if file_type == 'pdf':
@@ -110,7 +101,6 @@ async def upload_and_qa(
         if not text:
             return "Could not extract any text from the document."
 
-        # Truncate text if too large to avoid prompt size issues
         max_chars = 3000
         if len(text) > max_chars:
             text = text[:max_chars] + "\n... (truncated)"
@@ -118,7 +108,6 @@ async def upload_and_qa(
     except Exception as e:
         return f"Failed to extract text from document: {e}"
 
-    # Construct prompt for ChatGroq
     prompt = (
         "You are provided context extracted from a user-uploaded document.\n"
         f"Document content:\n{text}\n\n"
@@ -137,5 +126,4 @@ async def upload_and_qa(
 
 
 if __name__ == "__main__":
-    # Run MCP server with HTTP transport on port 8000
     mcp.run(transport="http", port=8000)
