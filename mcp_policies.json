@@ -20,7 +20,11 @@
           "value": [
             "health_check",
             "ask_knowledge",
-            "upload_and_qa"
+            "upload_and_qa",
+            "diet_and_nutrition",
+            "mental_health_support",
+            "emergency_instructions",
+            "exercise_and_fitness"
           ]
         }
       ],
@@ -85,6 +89,90 @@
           "path": "attributes.name",
           "operator": "equals",
           "value": "upload_and_qa"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    },
+    {
+      "name": "execute-tools-diet_and_nutrition",
+      "description": "Execute tools:diet_and_nutrition (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "diet_and_nutrition"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    },
+    {
+      "name": "execute-tools-mental_health_support",
+      "description": "Execute tools:mental_health_support (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "mental_health_support"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    },
+    {
+      "name": "execute-tools-emergency_instructions",
+      "description": "Execute tools:emergency_instructions (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "emergency_instructions"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    },
+    {
+      "name": "execute-tools-exercise_and_fitness",
+      "description": "Execute tools:exercise_and_fitness (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "exercise_and_fitness"
         }
       ],
       "actions": [

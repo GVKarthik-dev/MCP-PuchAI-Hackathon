@@ -9,7 +9,7 @@ from eunomia_mcp import create_eunomia_middleware
 from fastmcp import FastMCP
 from langchain_groq import ChatGroq
 
-load_dotenv('.env.dev')
+load_dotenv('.env')
 
 mcp = FastMCP(name="Groq AI Knowledge, Document Q&A & Health Assistant")
 
