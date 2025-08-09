@@ -30,8 +30,8 @@ async def health_check(query: str) -> str:
     """
     prompt = (
         "You are an AI assistant specialized in health information. "
-        "Please provide helpful and accurate answers, and include a concise summary of the situation "
-        "and clear recommendations on what the user should do next. Always remind users to consult a healthcare professional.\n"
+        "Please provide helpful and accurate answers, and include  less than 5 steps to handel the situation and make it short and simple!"
+        # "and clear recommendations on what the user should do next. Always remind users to consult a healthcare professional.\n"
         ""
         f"User query: {query}"
     )
@@ -53,6 +53,7 @@ async def diet_and_nutrition(query: str) -> str:
     """
     prompt = (
         "You are a helpful diet and nutrition expert.\n"
+        "Please provide helpful and accurate answers, and include  less than 6 steps to handel the situation and make it short and simple!"
         "Give recommendations on diet plans, nutritional advice, and healthy eating tailored to the user's query.\n"
         "Include practical tips and friendly encouragement.\n\n"
         f"User query: {query}"
