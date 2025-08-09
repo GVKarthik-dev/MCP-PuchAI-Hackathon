@@ -17,7 +17,7 @@ mcp = FastMCP(name="Groq AI Knowledge, Document Q&A & Health Assistant")
 
 chat_groq = ChatGroq(
     model='llama-3.1-8b-instant',
-    max_tokens=200,
+    max_tokens=250,
 )
 
 
@@ -32,10 +32,12 @@ async def health_check(query: str) -> str:
         "You are an AI assistant specialized in health information. "
         "Please provide helpful and accurate answers, and include a concise summary of the situation "
         "and clear recommendations on what the user should do next. Always remind users to consult a healthcare professional.\n"
+        ""
         f"User query: {query}"
     )
 
     try:
+        
         response = await chat_groq.ainvoke(prompt)
         return (
             "Disclaimer: This is AI-generated information and not a substitute for professional medical advice.\n\n"
@@ -43,6 +45,88 @@ async def health_check(query: str) -> str:
         )
     except Exception as e:
         return f"Failed to get response from ChatGroq: {e}"
+@mcp.tool
+async def diet_and_nutrition(query: str) -> str:
+    """
+    Diet and Nutrition Assistant:
+    Provide personalized diet plans, nutritional info, and healthy eating tips.
+    """
+    prompt = (
+        "You are a helpful diet and nutrition expert.\n"
+        "Give recommendations on diet plans, nutritional advice, and healthy eating tailored to the user's query.\n"
+        "Include practical tips and friendly encouragement.\n\n"
+        f"User query: {query}"
+    )
+    try:
+        response = await chat_groq.ainvoke(prompt)
+        return response.content
+    except Exception as e:
+        return f"Error generating diet and nutrition advice: {e}"
+
+@mcp.tool
+async def mental_health_support(query: str) -> str:
+    """
+    Mental Health Support:
+    Offer empathetic responses, coping strategies, and resources for mental well-being and stress management.
+    Always include encouragement to seek professional help if needed.
+    """
+    prompt = (
+        "You are a compassionate mental health assistant.\n"
+        "Respond empathetically, provide coping strategies, and helpful resources.\n"
+        "Encourage the user to consult a mental health professional if needed.\n\n"
+        f"User query: {query}"
+    )
+    try:
+        response = await chat_groq.ainvoke(prompt)
+        return (
+            "⚠️ Disclaimer: This advice is not a substitute for professional mental health support.\n\n"
+            + response.content
+        )
+    except Exception as e:
+        return f"Error generating mental health support: {e}"
+
+@mcp.tool
+async def emergency_instructions(emergency_type: str) -> str:
+    """
+    Emergency Instructions Tool:
+    Provide clear, immediate, step-by-step advice for common emergencies such as choking or burns.
+    Always includes safety precautions and a disclaimer to seek professional medical help urgently.
+    """
+    prompt = (
+        "You are an expert emergency responder providing clear and concise instructions.\n"
+        "Given the type of emergency provided, give step-by-step guidance on what to do immediately.\n"
+        "Include safety precautions and remind the user to call emergency services if needed.\n\n"
+        f"Emergency type: {emergency_type}\n"
+        "Please provide instructions suitable for a layperson to follow."
+    )
+    try:
+        response = await chat_groq.ainvoke(prompt)
+        return (
+            "⚠️ Emergency Disclaimer: These instructions are for immediate first aid only. "
+            "Always call emergency services or seek professional medical help immediately in any serious emergency.\n\n"
+            + response.content
+        )
+    except Exception as e:
+        return f"Error generating emergency instructions: {e}"
+
+@mcp.tool
+async def exercise_and_fitness(query: str) -> str:
+    """
+    Exercise & Fitness Guide:
+    Suggest exercises, fitness routines, and recovery tips based on user needs and input.
+    Provide safe and practical recommendations.
+    """
+    prompt = (
+        "You are a knowledgeable fitness coach.\n"
+        "Suggest suitable exercises, workout routines, and recovery advice based on the user's input.\n"
+        "Mention any necessary precautions.\n\n"
+        f"User query: {query}"
+    )
+    try:
+        response = await chat_groq.ainvoke(prompt)
+        return response.content
+    except Exception as e:
+        return f"Error generating exercise and fitness advice: {e}"
 
 @mcp.tool
 async def ask_knowledge(question: str) -> str:
