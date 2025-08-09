@@ -1,3 +1,5 @@
+# `#BuildWithPuch`
+
 # 🧠 Groq AI Knowledge, Document Q&A & Health Assistant MCP
 
 This is a Modular Conversational Platform (MCP) powered by **FastMCP**, **Groq LLaMA 3.1 (8B)** via `ChatGroq`, and integrated with document parsing, health tools, and AI assistants for various domains including:
