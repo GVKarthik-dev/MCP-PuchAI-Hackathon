@@ -13,12 +13,10 @@ load_dotenv('.env')
 
 mcp = FastMCP(name="Groq AI Knowledge, Document Q&A & Health Assistant")
 
-
 chat_groq = ChatGroq(
     model='llama-3.1-8b-instant',
     max_tokens=250
 )
-
 
 # -----------------------------
 # PROMPT BUILDERS
@@ -45,7 +43,6 @@ def build_knowledge_prompt(question: str) -> str:
     Creates a detailed request prompt for the AI Knowledge Assistant.
     """
     return f"Explain the following in detail and provide clear, organized information:\n{question}"
-
 
 # @mcp.prompt
 def build_doc_qa_prompt(document_text: str, question: str) -> str:
