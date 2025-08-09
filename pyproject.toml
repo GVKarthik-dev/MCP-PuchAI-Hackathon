@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "eunomia-mcp>=0.3.9",
     "fastapi[standard]>=0.116.1",
     # "faker>=37.5.3",
     "fastmcp>=2.11.2",

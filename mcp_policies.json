@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "name": "groq-ai-knowledge-document-q-a-health-assistant-generated-policy",
+  "description": "Generated policy for MCP server: Groq AI Knowledge, Document Q&A & Health Assistant",
+  "rules": [
+    {
+      "name": "list-tools",
+      "description": "List all tools (tip: exclude from `attributes.name`'s values the ones that you want to hide from the MCP client)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "in",
+          "value": [
+            "health_check",
+            "ask_knowledge",
+            "upload_and_qa"
+          ]
+        }
+      ],
+      "actions": [
+        "list"
+      ]
+    },
+    {
+      "name": "execute-tools-health_check",
+      "description": "Execute tools:health_check (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "health_check"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    },
+    {
+      "name": "execute-tools-ask_knowledge",
+      "description": "Execute tools:ask_knowledge (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "ask_knowledge"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    },
+    {
+      "name": "execute-tools-upload_and_qa",
+      "description": "Execute tools:upload_and_qa (tip: add additional conditions on `attributes.arguments.[:path]` to restrict this execution)",
+      "effect": "allow",
+      "principal_conditions": [],
+      "resource_conditions": [
+        {
+          "path": "attributes.component_type",
+          "operator": "equals",
+          "value": "tools"
+        },
+        {
+          "path": "attributes.name",
+          "operator": "equals",
+          "value": "upload_and_qa"
+        }
+      ],
+      "actions": [
+        "execute"
+      ]
+    }
+  ],
+  "default_effect": "deny"
+}
