@@ -1,20 +1,84 @@
 #BuildWithPuch
-
-import os
+from os import getenv
 import io
 import base64
 from typing import Optional
 from dotenv import load_dotenv
-
+from textwrap import dedent
 import pdfplumber
 from docx import Document
 
 from fastmcp import FastMCP
 from langchain_groq import ChatGroq
+from datetime import datetime
+
+from typing import Annotated
+from fastmcp import FastMCP
+from fastmcp.server.auth.providers.bearer import BearerAuthProvider, RSAKeyPair
+from mcp import ErrorData, McpError
+from mcp.server.auth.provider import AccessToken
+
+from fastmcp.server.auth.providers.bearer import BearerAuthProvider, RSAKeyPair
+from mcp.server.auth.provider import AccessToken
+from mcp import ErrorData, McpError
+from mcp.types import TextContent, INVALID_PARAMS
+
+import markdownify
+import httpx
+import readabilipy
+
 
 load_dotenv('.env.dev')
 
-mcp = FastMCP(name="Groq AI Knowledge, Document Q&A & Health Assistant")
+TOKEN = getenv("AUTH_TOKEN")
+MY_NUMBER = getenv("MY_NUMBER")
+
+# --- Auth ---
+class SimpleBearerAuthProvider(BearerAuthProvider):
+    def __init__(self, token: str):
+        k = RSAKeyPair.generate()
+        super().__init__(
+            public_key=k.public_key, jwks_uri=None, issuer=None, audience=None
+        )
+        self.token = token
+
+    async def load_access_token(self, token: str) -> AccessToken | None:
+        if token == self.token:
+            return AccessToken(
+                token=token, client_id="task-client", scopes=["*"], expires_at=None
+            )
+        return None
+
+
+mcp = FastMCP(
+    "Task Management MCP Server",
+    auth=SimpleBearerAuthProvider(TOKEN),
+)
+
+# since its a starter, we can use an in memory dict as a db
+TASKS: dict[str, dict[str, dict]] = {}
+
+
+def _now() -> str:
+    return datetime.utcnow().isoformat()
+
+
+def _user_tasks(puch_user_id: str) -> dict[str, dict]:
+    if not puch_user_id:
+        raise McpError(
+            ErrorData(code=INVALID_PARAMS, message="puch_user_id is required")
+        )
+    return TASKS.setdefault(puch_user_id, {})
+
+
+def _error(code, msg):
+    raise McpError(ErrorData(code=code, message=msg))
+
+
+mcp = FastMCP(
+    name="Groq AI Knowledge, Document Q&A & Health Assistant",
+    version="0.1.0"
+    )
 
 
 chat_groq = ChatGroq(
@@ -22,8 +86,40 @@ chat_groq = ChatGroq(
     max_tokens=250,
 )
 
-
 @mcp.tool
+async def validate() -> str:
+    return getenv('MY_NUMBER')
+
+@mcp.tool()
+async def about() -> dict[str, str]:
+    """
+    Returns information about this MCP server.
+    """
+    server_name = "Groq AI Knowledge, Document Q&A & Health Assistant MCP"
+    server_description = dedent("""
+    This MCP server is powered by Groq AI and provides a versatile set of tools:
+    
+    - **Knowledge Assistant** for general information, explanations, and summaries.
+    - **Document Q&A** for answering questions from user-uploaded PDF and DOCX files.
+    - **Health Support** tools including:
+        - General health queries with quick action steps
+        - Diet and nutrition advice
+        - Mental health support and coping strategies
+        - First-aid & emergency instructions
+        - Exercise and fitness recommendations
+    - Processes and understands user queries with AI for quick, accurate responses.
+    
+    Disclaimer: The health-related tools are for informational purposes only and do not replace professional medical advice.
+    """)
+
+    return {
+        "name": server_name,
+        "description": server_description
+    }
+
+
+
+@mcp.tool()
 async def health_check(query: str) -> str:
     """
     Health-related tool:
@@ -47,7 +143,8 @@ async def health_check(query: str) -> str:
         )
     except Exception as e:
         return f"Failed to get response from ChatGroq: {e}"
-@mcp.tool
+
+@mcp.tool()
 async def diet_and_nutrition(query: str) -> str:
     """
     Diet and Nutrition Assistant:
@@ -66,7 +163,7 @@ async def diet_and_nutrition(query: str) -> str:
     except Exception as e:
         return f"Error generating diet and nutrition advice: {e}"
 
-@mcp.tool
+@mcp.tool()
 async def mental_health_support(query: str) -> str:
     """
     Mental Health Support:
@@ -88,7 +185,7 @@ async def mental_health_support(query: str) -> str:
     except Exception as e:
         return f"Error generating mental health support: {e}"
 
-@mcp.tool
+@mcp.tool()
 async def emergency_instructions(emergency_type: str) -> str:
     """
     Emergency Instructions Tool:
@@ -112,7 +209,7 @@ async def emergency_instructions(emergency_type: str) -> str:
     except Exception as e:
         return f"Error generating emergency instructions: {e}"
 
-@mcp.tool
+@mcp.tool()
 async def exercise_and_fitness(query: str) -> str:
     """
     Exercise & Fitness Guide:
@@ -131,7 +228,7 @@ async def exercise_and_fitness(query: str) -> str:
     except Exception as e:
         return f"Error generating exercise and fitness advice: {e}"
 
-@mcp.tool
+@mcp.tool()
 async def ask_knowledge(question: str) -> str:
     """
     AI-Powered Knowledge Assistant:
@@ -145,7 +242,7 @@ async def ask_knowledge(question: str) -> str:
         return f"Error getting response from ChatGroq: {e}"
 
 
-@mcp.tool
+@mcp.tool()
 async def upload_and_qa(
     doc_base64: str,
     question: str,
@@ -213,4 +310,8 @@ async def upload_and_qa(
 
 
 if __name__ == "__main__":
-    mcp.run(transport="http", port=8000)
+    mcp.run(
+        transport="http",  # supports Puch & works well with stateless_http=True               # important if connecting from another device/VPS
+        port=8000,
+        # stateless_http=True
+    )
